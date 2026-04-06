@@ -1,63 +1,82 @@
-# claude-vibe-coder
+# TLC Tech Policies
 
-**The Life Church — Global Claude Code Policy**
+**The Life Church — Managed IT Policies for Staff Devices**
 
-This repo manages a shared `CLAUDE.md` policy file for Life Church Macs. When Claude Code runs on a managed machine, it automatically loads this file and adopts the tone, workflow, and guardrails defined here.
-
-The deployment script can be wired to **Mosyle MDM** for automatic rollout across all managed machines — but that connection is not required. The policy can also be deployed manually or tested locally.
+This repo contains policies, configuration files, and deployment scripts that IT manages across Life Church Macs via Mosyle MDM and Claude admin console. It is organized by area so policies can be found, reviewed, and updated independently.
 
 ---
 
-## What This Does
+## Structure
 
-- Defines how Claude Code should behave as a creative collaborator for TLC staff
-- Enforces a consistent tone: encouraging, casual, mentor-like — not bureaucratic
-- Sets guardrails around API usage, GitHub org hygiene, and IT check-ins
-- Establishes project setup conventions (WORKLOG, DECISIONS, IDEAS, etc.)
-
-The policy is intentionally written for **non-developer creative staff** — people who are smart and capable but not professional engineers. Claude is positioned as a knowledgeable guide, not a gatekeeper.
-
----
-
-## How It Works
-
-`deploy-claude-policy.sh` fetches the latest `CLAUDE.md` from this repo and installs it on a machine. It:
-
-1. Creates `/etc/claude-code/` if it doesn't exist
-2. Pulls the latest `CLAUDE.md` from this repo's `main` branch
-3. Writes it to `/etc/claude-code/CLAUDE.md`
-
-Claude Code automatically discovers and loads CLAUDE.md files from `/etc/claude-code/`, making the policy available in every session on that machine.
+```
+tlc-tech-policies/
+├── software/
+│   ├── claude/       ← Claude Code behavioral policy and permission settings
+│   └── shell/        ← Terminal shell restrictions deployed via Mosyle
+└── hardware/         ← Mac hardware and device configuration (coming soon)
+```
 
 ---
 
-## Deployment Options
+## software/claude
 
-### Manual / Local
-Run `deploy-claude-policy.sh` directly on any Mac (as root) to install the policy on that machine.
+Controls how Claude Code behaves on managed Macs. Three complementary layers:
 
-### Via Mosyle MDM (optional, not yet configured)
-The script is designed to work as a **Mosyle Custom Script** for org-wide rollout:
+| Layer | File | Where it goes | Enforces |
+|---|---|---|---|
+| **Mosyle Config Profile** | `claude-code-policy.mobileconfig` | Mosyle → Custom Configuration Profile | Deny list + bypass mode (machine-level, tamper-proof) |
+| **Claude Admin Console** | `managed-settings.json` | claude.ai org admin settings | Deny list + bypass mode + announcement (org account layer) |
+| **Mosyle Shell Script** | `deploy-claude-policy.sh` | Mosyle → Custom Script (daily) | CLAUDE.md behavioral policy |
 
-1. Upload `deploy-claude-policy.sh` to Mosyle as a **Custom Script**
-2. Set it to run **as root**, on a **daily** schedule
-3. No arguments needed — the URL is hardcoded to `main`
+### Deployment
 
-Once wired up, updating the policy is as simple as merging to `main` — Mosyle handles the rest.
+**Mosyle Config Profile**
+1. Mosyle → MDM Profiles → Add Profile → Custom Profile
+2. Upload `claude-code-policy.mobileconfig`
+3. Scope to vibe coder device group
+4. Deploy
 
-To update the policy: edit `CLAUDE.md` and merge to `main`.
+Verify on a test machine: `defaults read com.anthropic.claudecode`
+
+**Claude Admin Console**
+1. claude.ai → Admin → Settings
+2. Paste contents of `managed-settings.json`
+3. Save
+
+**Mosyle Shell Script**
+1. Mosyle → Custom Scripts → Add Script
+2. Upload `deploy-claude-policy.sh`, run as root, daily schedule
 
 ---
 
-## Files
+## software/shell
 
-| File | Purpose |
-|---|---|
-| `CLAUDE.md` | The policy itself — loaded by Claude Code on every managed Mac |
-| `deploy-claude-policy.sh` | Mosyle deployment script — fetches and installs the policy |
+Restricts dangerous terminal commands on managed Macs via `/etc/zshrc`. Two policies for two device groups:
+
+| File | Group | Blocks |
+|---|---|---|
+| `shell-policy-vibe-coders.zsh` | General staff (no terminal) | Package installs only — safety net for VS Code terminal |
+| `shell-policy-default.zsh` | Claude Code users (terminal access) | Full deny list — all restricted commands |
+
+### Deployment
+
+**Mosyle → Custom Scripts → Add Script** (once per group)
+- Upload `deploy-shell-policy-vibe-coders.sh`, scope to vibe coder group
+- Upload `deploy-shell-policy-default.sh`, scope to Claude Code users group
+- Both run as root on a recurring schedule
+
+When a policy changes: update the `.zsh` file and merge to `main`. Mosyle picks it up on the next scheduled run.
 
 ---
 
-## Questions
+## hardware
 
-Reach out to IT. This is managed by The Life Church IT/Dev team.
+Coming soon — Mac provisioning, dock configuration, and device-level policy.
+
+---
+
+## Contributing
+
+- Never push directly to `main` — all changes require a PR with at least one reviewer
+- Scripts deploy to managed Macs automatically after merge — review carefully before approving
+- Questions? Reach out to IT.

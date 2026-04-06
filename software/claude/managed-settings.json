@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(rm -rf *)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | bash)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(killall:*)",
+      "Bash(pkill:*)",
+      "Bash(dd:*)",
+      "Bash(mkfs:*)",
+      "Bash(fdisk:*)",
+      "Bash(brew install:*)",
+      "Bash(npm install -g:*)",
+      "Bash(pip install --system:*)",
+      "Bash(crontab:*)",
+      "Bash(launchctl:*)",
+      "Bash(systemctl:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push --force-with-lease:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(*.pem)",
+      "Read(*.key)"
+    ]
+  },
+  "disableBypassPermissionsMode": "disable",
+  "companyAnnouncements": [
+    "Claude Code has been customized for The Life Church! We've built in instructions to help Claude work better with your creative projects. Curious what's under the hood? github.com/The-Life-Church/claude-vibe-coder. Questions? IT's got you."
+  ]
+}
