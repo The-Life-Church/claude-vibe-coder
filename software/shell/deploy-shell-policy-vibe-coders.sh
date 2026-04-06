@@ -3,19 +3,49 @@
 # The Life Church — Shell Policy Deployment (Vibe Coders)
 # Deploy via Mosyle as a recurring script (run as root)
 # Scope to vibe coder device group in Mosyle.
-# Source: https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/shell/shell-policy-vibe-coders.zsh
+# curl -fsSL https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/shell/deploy-shell-policy-vibe-coders.sh | bash
 
 POLICY_FILE="/etc/tlc-shell-policy.zsh"
-POLICY_URL="https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/shell/shell-policy-vibe-coders.zsh"
 ZSHRC="/etc/zshrc"
 SOURCE_LINE="source $POLICY_FILE"
 
-curl -s "$POLICY_URL" -o "$POLICY_FILE"
+cat > "$POLICY_FILE" << 'EOF'
+# The Life Church — Shell Policy (Vibe Coders)
+# Managed by IT. Deployed via Mosyle. Do not edit directly.
 
-if [ ! -f "$POLICY_FILE" ]; then
-    echo "ERROR: Failed to deploy shell policy."
-    exit 1
-fi
+_tlc_install_message() {
+  echo "Heads up — package installs are handled by IT."
+  echo "Reach out by entering a Systems Request at staff.thelifechurch.com."
+}
+
+brew() {
+  if [[ "$1" == "install" ]]; then
+    _tlc_install_message; return 1
+  fi
+  command brew "$@"
+}
+
+npm() {
+  if [[ "$1" == "install" && "$*" == *"-g"* ]]; then
+    _tlc_install_message; return 1
+  fi
+  command npm "$@"
+}
+
+pip() {
+  if [[ "$1" == "install" && "$*" == *"--system"* ]]; then
+    _tlc_install_message; return 1
+  fi
+  command pip "$@"
+}
+
+pip3() {
+  if [[ "$1" == "install" && "$*" == *"--system"* ]]; then
+    _tlc_install_message; return 1
+  fi
+  command pip3 "$@"
+}
+EOF
 
 chmod 644 "$POLICY_FILE"
 chown root:wheel "$POLICY_FILE"
