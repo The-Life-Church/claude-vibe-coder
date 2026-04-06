@@ -18,6 +18,11 @@ _tlc_install_message() {
   echo "Reach out by entering a Systems Request at staff.thelifechurch.com."
 }
 
+# Privilege escalation
+sudo() {
+  _tlc_blocked_message; return 1
+}
+
 brew() {
   if [[ "$1" == "install" ]]; then
     _tlc_install_message; return 1
