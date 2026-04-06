@@ -1,92 +1,82 @@
-# claude-vibe-coder
+# TLC Tech Policies
 
-**The Life Church — Global Claude Code Policy**
+**The Life Church — Managed IT Policies for Staff Devices**
 
-This repo manages the Claude Code policy and permissions for Life Church Macs. It contains three deployable artifacts that work together as a layered security and behavior system.
-
----
-
-## Deployment Architecture
-
-Claude Code is controlled through three complementary layers:
-
-| Layer | File | Where it goes | What it enforces | Tamper-proof? |
-|---|---|---|---|---|
-| **Mosyle Config Profile** | `claude-code-policy.mobileconfig` | Mosyle → Custom Configuration Profile | Deny list + bypass mode | Yes — OS-enforced |
-| **Claude Admin Console** | `managed-settings.json` | claude.ai org admin settings | Deny list + bypass mode + announcement | Yes — server-enforced |
-| **Mosyle Shell Script** | `deploy-claude-policy.sh` | Mosyle → Custom Script (daily) | CLAUDE.md behavioral policy | Soft (file-based) |
-
-### Why three layers?
-
-- **Mosyle profile** catches users on personal Claude accounts (not signed into the TLC org)
-- **Admin console** catches org account users on unmanaged machines (personal Macs, borrowed devices)
-- Together they cover every scenario except a personal account on a personal Mac — which is outside TLC's systems entirely
-
-Users own their own allow lists via `~/.claude/settings.json`. IT does not manage those.
+This repo contains policies, configuration files, and deployment scripts that IT manages across Life Church Macs via Mosyle MDM and Claude admin console. It is organized by area so policies can be found, reviewed, and updated independently.
 
 ---
 
-## Files
+## Structure
 
-| File | Purpose |
-|---|---|
-| `CLAUDE.md` | Behavioral policy — loaded by Claude Code on every managed Mac via `deploy-claude-policy.sh` |
-| `managed-settings.json` | Permission settings — paste into Claude.ai org admin console |
-| `claude-code-policy.mobileconfig` | Mosyle configuration profile — upload to Mosyle as a Custom Configuration Profile |
-| `deploy-claude-policy.sh` | Shell script — deploy via Mosyle as a recurring daily Custom Script |
+```
+tlc-tech-policies/
+├── software/
+│   ├── claude/       ← Claude Code behavioral policy and permission settings
+│   └── shell/        ← Terminal shell restrictions deployed via Mosyle
+└── hardware/         ← Mac hardware and device configuration (coming soon)
+```
 
 ---
 
-## Deployment Instructions
+## software/claude
 
-### 1. Mosyle Configuration Profile
-1. Go to Mosyle → **MDM Profiles** → **Add Profile** → **Custom Profile**
+Controls how Claude Code behaves on managed Macs. Three complementary layers:
+
+| Layer | File | Where it goes | Enforces |
+|---|---|---|---|
+| **Mosyle Config Profile** | `claude-code-policy.mobileconfig` | Mosyle → Custom Configuration Profile | Deny list + bypass mode (machine-level, tamper-proof) |
+| **Claude Admin Console** | `managed-settings.json` | claude.ai org admin settings | Deny list + bypass mode + announcement (org account layer) |
+| **Mosyle Shell Script** | `deploy-claude-policy.sh` | Mosyle → Custom Script (daily) | CLAUDE.md behavioral policy |
+
+### Deployment
+
+**Mosyle Config Profile**
+1. Mosyle → MDM Profiles → Add Profile → Custom Profile
 2. Upload `claude-code-policy.mobileconfig`
-3. Scope to your vibe coder device group
+3. Scope to vibe coder device group
 4. Deploy
 
-This is OS-enforced. Users cannot remove it even with local admin rights.
+Verify on a test machine: `defaults read com.anthropic.claudecode`
 
-**Before rolling out org-wide**, test on one machine:
-```bash
-defaults read com.anthropic.claudecode
-```
-Confirm the deny list and `disableBypassPermissionsMode` are present in the output.
+**Claude Admin Console**
+1. claude.ai → Admin → Settings
+2. Paste contents of `managed-settings.json`
+3. Save
 
-### 2. Claude Admin Console
-1. Go to claude.ai → Admin → Settings
-2. Paste the contents of `managed-settings.json` into the managed settings field
-3. Save — applies immediately to all org account users
-
-### 3. Mosyle Shell Script (CLAUDE.md policy)
-1. Go to Mosyle → **Custom Scripts** → **Add Script**
-2. Upload `deploy-claude-policy.sh`
-3. Set to run **as root** on a **daily** schedule
-4. No arguments needed
-
-To update the behavioral policy: edit `CLAUDE.md` and merge to `main`. Mosyle handles the rest.
+**Mosyle Shell Script**
+1. Mosyle → Custom Scripts → Add Script
+2. Upload `deploy-claude-policy.sh`, run as root, daily schedule
 
 ---
 
-## What the Permissions Block
+## software/shell
 
-| Command | Reason |
-|---|---|
-| `sudo` | System-level privilege escalation |
-| `rm -rf` | Destructive file deletion |
-| `curl/wget \| bash` | Remote code execution |
-| `chmod`, `chown` | Permission and ownership changes |
-| `kill`, `killall`, `pkill` | Process termination |
-| `dd`, `mkfs`, `fdisk` | Disk operations |
-| `brew install` | System package installs — IT manages these |
-| `npm install -g` | Global Node installs |
-| `pip install --system` | System Python installs |
-| `crontab`, `launchctl`, `systemctl` | Scheduled task and service management |
-| `git push --force` / `--force-with-lease` | Destructive git operations |
-| `.env`, `*.pem`, `*.key`, `secrets/**` | Reading secrets and credentials |
+Restricts dangerous terminal commands on managed Macs via `/etc/zshrc`. Two policies for two device groups:
+
+| File | Group | Blocks |
+|---|---|---|
+| `shell-policy-vibe-coders.zsh` | General staff (no terminal) | Package installs only — safety net for VS Code terminal |
+| `shell-policy-default.zsh` | Claude Code users (terminal access) | Full deny list — all restricted commands |
+
+### Deployment
+
+**Mosyle → Custom Scripts → Add Script** (once per group)
+- Upload `deploy-shell-policy-vibe-coders.sh`, scope to vibe coder group
+- Upload `deploy-shell-policy-default.sh`, scope to Claude Code users group
+- Both run as root on a recurring schedule
+
+When a policy changes: update the `.zsh` file and merge to `main`. Mosyle picks it up on the next scheduled run.
 
 ---
 
-## Questions
+## hardware
 
-Reach out to IT. This is managed by The Life Church IT/Dev team.
+Coming soon — Mac provisioning, dock configuration, and device-level policy.
+
+---
+
+## Contributing
+
+- Never push directly to `main` — all changes require a PR with at least one reviewer
+- Scripts deploy to managed Macs automatically after merge — review carefully before approving
+- Questions? Reach out to IT.

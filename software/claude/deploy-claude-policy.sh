@@ -2,11 +2,11 @@
 
 # The Life Church — Claude Code Policy Deployment
 # Deploy via Mosyle as a recurring daily script (run as root)
-# Source: https://raw.githubusercontent.com/The-Life-Church/claude-vibe-coder/main/CLAUDE.md
+# Source: https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/claude/CLAUDE.md
 
 POLICY_DIR="/etc/claude-code"
 POLICY_FILE="$POLICY_DIR/CLAUDE.md"
-POLICY_URL="https://raw.githubusercontent.com/The-Life-Church/claude-vibe-coder/main/CLAUDE.md"
+POLICY_URL="https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/claude/CLAUDE.md"
 IMPORT_BLOCK="
 # ---------------------------------------------------------------
 # TLC MANAGED POLICY — do not remove this block
