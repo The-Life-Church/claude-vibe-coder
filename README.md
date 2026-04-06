@@ -2,7 +2,7 @@
 
 **The Life Church — Managed IT Policies for Staff Devices**
 
-This repo contains policies, configuration files, and deployment scripts that IT manages across Life Church Macs via Mosyle MDM and Claude admin console. It is organized by area so policies can be found, reviewed, and updated independently.
+This repo contains policies, configuration files, and deployment scripts that IT manages across Life Church Macs via Mosyle and the Claude admin console. It is organized by area so policies can be found, reviewed, and updated independently.
 
 ---
 
@@ -42,6 +42,8 @@ Verify on a test machine: `cat "/Library/Application Support/ClaudeCode/managed-
 1. claude.ai → Admin → Settings
 2. Paste contents of `managed-settings.json`
 3. Save
+
+Verify in Claude Code: `/status` should show `Enterprise managed settings (remote)`
 
 **Mosyle Shell Script**
 1. Mosyle → Custom Scripts → Add Script

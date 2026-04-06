@@ -41,6 +41,8 @@ Then restart Claude Code and run:
 /status
 ```
 
+Expected result: `Setting sources` includes the local managed settings source.
+
 ---
 
 ## Admin Console Settings
@@ -51,6 +53,9 @@ Then restart Claude Code and run:
 
 > Manual step — no Mosyle involvement. Same settings file, different delivery path.
 
+Verify in Claude Code with `/status`.
+Expected result: `Setting sources` includes `Enterprise managed settings (remote)`.
+
 ---
 
 ## Updating a Policy
@@ -60,4 +65,4 @@ Then restart Claude Code and run:
 3. Merge to `main`
 4. Mosyle picks up the change on the next scheduled run (up to 24 hours)
 
-For the admin console settings or config profile, update those manually after merging.
+For the admin console settings, update them manually after merging.
