@@ -2,50 +2,27 @@
 
 **The Life Church — Global Claude Code Policy**
 
-This repo manages a shared `CLAUDE.md` policy file for Life Church Macs. When Claude Code runs on a managed machine, it automatically loads this file and adopts the tone, workflow, and guardrails defined here.
-
-The deployment script can be wired to **Mosyle MDM** for automatic rollout across all managed machines — but that connection is not required. The policy can also be deployed manually or tested locally.
+This repo manages the Claude Code policy and permissions for Life Church Macs. It contains three deployable artifacts that work together as a layered security and behavior system.
 
 ---
 
-## What This Does
+## Deployment Architecture
 
-- Defines how Claude Code should behave as a creative collaborator for TLC staff
-- Enforces a consistent tone: encouraging, casual, mentor-like — not bureaucratic
-- Sets guardrails around API usage, GitHub org hygiene, and IT check-ins
-- Establishes project setup conventions (WORKLOG, DECISIONS, IDEAS, etc.)
+Claude Code is controlled through three complementary layers:
 
-The policy is intentionally written for **non-developer creative staff** — people who are smart and capable but not professional engineers. Claude is positioned as a knowledgeable guide, not a gatekeeper.
+| Layer | File | Where it goes | What it enforces | Tamper-proof? |
+|---|---|---|---|---|
+| **Mosyle Config Profile** | `claude-code-policy.mobileconfig` | Mosyle → Custom Configuration Profile | Deny list + bypass mode | Yes — OS-enforced |
+| **Claude Admin Console** | `managed-settings.json` | claude.ai org admin settings | Deny list + bypass mode + announcement | Yes — server-enforced |
+| **Mosyle Shell Script** | `deploy-claude-policy.sh` | Mosyle → Custom Script (daily) | CLAUDE.md behavioral policy | Soft (file-based) |
 
----
+### Why three layers?
 
-## How It Works
+- **Mosyle profile** catches users on personal Claude accounts (not signed into the TLC org)
+- **Admin console** catches org account users on unmanaged machines (personal Macs, borrowed devices)
+- Together they cover every scenario except a personal account on a personal Mac — which is outside TLC's systems entirely
 
-`deploy-claude-policy.sh` fetches the latest `CLAUDE.md` from this repo and installs it on a machine. It:
-
-1. Creates `/etc/claude-code/` if it doesn't exist
-2. Pulls the latest `CLAUDE.md` from this repo's `main` branch
-3. Writes it to `/etc/claude-code/CLAUDE.md`
-
-Claude Code automatically discovers and loads CLAUDE.md files from `/etc/claude-code/`, making the policy available in every session on that machine.
-
----
-
-## Deployment Options
-
-### Manual / Local
-Run `deploy-claude-policy.sh` directly on any Mac (as root) to install the policy on that machine.
-
-### Via Mosyle MDM (optional, not yet configured)
-The script is designed to work as a **Mosyle Custom Script** for org-wide rollout:
-
-1. Upload `deploy-claude-policy.sh` to Mosyle as a **Custom Script**
-2. Set it to run **as root**, on a **daily** schedule
-3. No arguments needed — the URL is hardcoded to `main`
-
-Once wired up, updating the policy is as simple as merging to `main` — Mosyle handles the rest.
-
-To update the policy: edit `CLAUDE.md` and merge to `main`.
+Users own their own allow lists via `~/.claude/settings.json`. IT does not manage those.
 
 ---
 
@@ -53,8 +30,60 @@ To update the policy: edit `CLAUDE.md` and merge to `main`.
 
 | File | Purpose |
 |---|---|
-| `CLAUDE.md` | The policy itself — loaded by Claude Code on every managed Mac |
-| `deploy-claude-policy.sh` | Mosyle deployment script — fetches and installs the policy |
+| `CLAUDE.md` | Behavioral policy — loaded by Claude Code on every managed Mac via `deploy-claude-policy.sh` |
+| `managed-settings.json` | Permission settings — paste into Claude.ai org admin console |
+| `claude-code-policy.mobileconfig` | Mosyle configuration profile — upload to Mosyle as a Custom Configuration Profile |
+| `deploy-claude-policy.sh` | Shell script — deploy via Mosyle as a recurring daily Custom Script |
+
+---
+
+## Deployment Instructions
+
+### 1. Mosyle Configuration Profile
+1. Go to Mosyle → **MDM Profiles** → **Add Profile** → **Custom Profile**
+2. Upload `claude-code-policy.mobileconfig`
+3. Scope to your vibe coder device group
+4. Deploy
+
+This is OS-enforced. Users cannot remove it even with local admin rights.
+
+**Before rolling out org-wide**, test on one machine:
+```bash
+defaults read com.anthropic.claudecode
+```
+Confirm the deny list and `disableBypassPermissionsMode` are present in the output.
+
+### 2. Claude Admin Console
+1. Go to claude.ai → Admin → Settings
+2. Paste the contents of `managed-settings.json` into the managed settings field
+3. Save — applies immediately to all org account users
+
+### 3. Mosyle Shell Script (CLAUDE.md policy)
+1. Go to Mosyle → **Custom Scripts** → **Add Script**
+2. Upload `deploy-claude-policy.sh`
+3. Set to run **as root** on a **daily** schedule
+4. No arguments needed
+
+To update the behavioral policy: edit `CLAUDE.md` and merge to `main`. Mosyle handles the rest.
+
+---
+
+## What the Permissions Block
+
+| Command | Reason |
+|---|---|
+| `sudo` | System-level privilege escalation |
+| `rm -rf` | Destructive file deletion |
+| `curl/wget \| bash` | Remote code execution |
+| `chmod`, `chown` | Permission and ownership changes |
+| `kill`, `killall`, `pkill` | Process termination |
+| `dd`, `mkfs`, `fdisk` | Disk operations |
+| `brew install` | System package installs — IT manages these |
+| `npm install -g` | Global Node installs |
+| `pip install --system` | System Python installs |
+| `crontab`, `launchctl`, `systemctl` | Scheduled task and service management |
+| `git push --force` / `--force-with-lease` | Destructive git operations |
+| `.env`, `*.pem`, `*.key`, `secrets/**` | Reading secrets and credentials |
 
 ---
 
