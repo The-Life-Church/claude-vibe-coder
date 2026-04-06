@@ -24,19 +24,20 @@ Controls how Claude Code behaves on managed Macs. Three complementary layers:
 
 | Layer | File | Where it goes | Enforces |
 |---|---|---|---|
-| **Mosyle Config Profile** | `claude-code-policy.mobileconfig` | Mosyle → Custom Configuration Profile | Deny list + bypass mode (machine-level, tamper-proof) |
+| **Mosyle Script** | `deploy-managed-settings.sh` | Mosyle → Custom Script (daily) | Deny list + bypass mode via `managed-settings.json` |
 | **Claude Admin Console** | `managed-settings.json` | claude.ai org admin settings | Deny list + bypass mode + announcement (org account layer) |
 | **Mosyle Shell Script** | `deploy-claude-policy.sh` | Mosyle → Custom Script (daily) | CLAUDE.md behavioral policy |
+| **Mosyle Config Profile** | `claude-code-policy.mobileconfig` | Mosyle → Custom Configuration Profile | Same settings, but currently less reliable |
 
 ### Deployment
 
-**Mosyle Config Profile**
-1. Mosyle → MDM Profiles → Add Profile → Custom Profile
-2. Upload `claude-code-policy.mobileconfig`
-3. Scope to vibe coder device group
-4. Deploy
+**Mosyle Managed Settings Script**
+1. Mosyle → Custom Scripts → Add Script
+2. Upload `deploy-managed-settings.sh`, run as root, daily schedule
+3. Scope to the Default group
+4. Restart Claude Code on the test Mac
 
-Verify on a test machine: `defaults read com.anthropic.claudecode`
+Verify on a test machine: `cat "/Library/Application Support/ClaudeCode/managed-settings.json"` and then `/status` inside Claude Code
 
 **Claude Admin Console**
 1. claude.ai → Admin → Settings
@@ -46,6 +47,12 @@ Verify on a test machine: `defaults read com.anthropic.claudecode`
 **Mosyle Shell Script**
 1. Mosyle → Custom Scripts → Add Script
 2. Upload `deploy-claude-policy.sh`, run as root, daily schedule
+
+**Mosyle Config Profile**
+1. Mosyle → MDM Profiles → Add Profile → Custom Profile
+2. Upload `claude-code-policy.mobileconfig`
+3. Scope to the Default group
+4. Treat as experimental until confirmed working in `/status`
 
 ---
 
