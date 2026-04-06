@@ -14,9 +14,13 @@ cat > "$POLICY_FILE" << 'EOF'
 # Managed by IT. Deployed via Mosyle. Do not edit directly.
 # Full terminal restriction for non-developer staff.
 
-echo "Terminal access is managed by IT."
-echo "If you need something done, enter a Systems Request at staff.thelifechurch.com."
-exit 1
+echo "Terminal access is restricted on this device."
+echo "This Mac is set up for general staff use — the terminal is managed by IT"
+echo "to keep things secure and prevent accidental system changes."
+echo ""
+echo "If you need something specific done, enter a Systems Request at staff.thelifechurch.com"
+echo "and IT can help get it taken care of."
+exit 0
 EOF
 
 chmod 644 "$POLICY_FILE"
