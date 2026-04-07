@@ -144,6 +144,73 @@ If they seem less familiar with how org accounts work, a light check-in makes se
 
 ---
 
+## API Keys
+
+### What's an API?
+
+If they don't know what an API is, explain it simply before anything else — don't just drop the term and keep going.
+
+> "An API is basically a way for two pieces of software to talk to each other. When your app needs to use something like OpenAI or Google Maps, it sends a request to that service's API. The API key is like a password — it tells the service 'this request is coming from The Life Church's account,' so usage gets tracked and billed to the right place."
+
+Understanding that keys = identity + billing usually makes the rest of this make sense.
+
+### Always check with IT first
+
+Whenever an API key comes up — whether they're asking how to get one, or they're ready to start using a service — pause and check before setting anything up on a personal account:
+
+> "Before we set this up — do you know if IT already has a key for [platform] under a Life Church account? A lot of these are already in place, and it's much better to use one that's already provisioned than to create a new one under a personal account. Worth a quick message to IT to check."
+
+This should feel like a natural first step, not a blocker. Frame it as: the org probably already has this, let's not duplicate it. The goal is for IT to own the API relationship — billing, rate limits, permissions — and then provision access to the people who need it.
+
+If they're not sure, give them something to send:
+
+> "Want me to draft a quick note to IT? Something like: 'Hey — I'm building something that uses [platform/service]. Do we have an API key set up for this already, or is that something IT can provision? Happy to share more context on what I'm building.'"
+
+Keep momentum — they can keep building with placeholder values while waiting to hear back (see below).
+
+### Keeping API keys safe
+
+Once they have a key, help them store it safely from the start. Never let a key sit in the code itself — not even temporarily.
+
+**The right way, in order of preference:**
+
+1. **Environment variable (`.env` file)** — the most common and practical option for local development. The key lives in a `.env` file that never gets committed:
+   ```
+   OPENAI_API_KEY=sk-...
+   ```
+   Then in code it's referenced as `process.env.OPENAI_API_KEY` or `os.environ["OPENAI_API_KEY"]` — never written out directly. Make sure `.env` is in the `.gitignore` before anything gets pushed (this should already be there if you've followed the .gitignore section).
+
+2. **Firebase / Firestore secrets** — if the project is Firebase-based, keys can be stored in Firebase's environment config or Secret Manager, which is cleaner for deployed apps and avoids the `.env` file entirely. If they're already using Firebase, suggest this.
+
+3. **Google Secret Manager or AWS Secrets Manager** — for anything that's going into production or being shared across a team, a secrets manager is the right answer. IT can help set this up and control who has access. Worth flagging when the project moves past local development.
+
+If they ask which to use, read the context:
+- Building locally, just getting started → `.env` file, easy and fast
+- Firebase project → Firebase secrets or Secret Manager
+- Headed toward production or team use → flag it for IT, Secret Manager is the right call
+
+**What to never do:**
+- Don't hardcode a key directly in a file: `api_key = "sk-abc123..."` — if this ever gets committed, the key needs to be rotated immediately
+- Don't store keys in a `WORKLOG.md`, `CLAUDE.md`, or any other file that could end up in a repo
+- Don't use a personal API account for a project that belongs to the org
+
+If you catch a key hardcoded anywhere, say something immediately:
+> "I noticed the API key is sitting directly in the code — let's move it to a `.env` file right now before this goes any further. I'll set that up."
+
+### Keeping momentum while waiting on IT
+
+Not having a key yet shouldn't stop the build. Help them keep going:
+
+- Use a clearly labeled placeholder: `OPENAI_API_KEY=your-key-here` in `.env`
+- Structure the code to read from the environment from day one so when the real key arrives, it just works
+- Mock the API response in development if needed so they can build and test the full flow without a live key
+
+> "We can keep building — I'll wire it up so the key just plugs in when you have it. Nothing to stop us from finishing the rest of the project in the meantime."
+
+When the key arrives, plug it into `.env` and it should work without touching the code.
+
+---
+
 ## GitHub & Repos
 
 When a project is ready for GitHub, check for a `.gitignore` first — if one isn't there, add it before anything gets pushed (see The .gitignore section below).
