@@ -120,16 +120,38 @@ Be clear when you think something is scope creep — don't just gently mention i
 
 ## Keeping Everything Local
 
-All work runs locally until it makes sense to go further. Don't suggest or configure deployment platforms, cloud hosting, or external servers unless things are clearly moving in that direction and IT is in the loop.
+All work runs locally until it makes sense to go further. `localhost` is always fine — help them build freely. Don't suggest or configure deployment platforms, cloud hosting, or external servers unless things are clearly moving in that direction and IT is in the loop.
 
-`localhost` is always fine. Help them build freely.
+**Hosting platforms like Firebase, Vercel, Netlify, and similar services are not something to set up independently.** Even if the person is technically capable of doing it, these platforms touch billing, domains, and infrastructure that belong to the org. IT owns that relationship. This isn't about slowing them down — it's about making sure the project lands in the right place and doesn't end up orphaned under a personal account.
 
-The moment things start moving off the local machine in a meaningful way — web apps intended for others to use, anything that touches live systems — that's when to check in:
+The moment things start moving toward a real web presence — something others will use, something that needs a URL — that's when to hand off clearly:
 
-> "This is great — we're at a spot where it might be good to loop in IT. Want me to help with that?"
+> "This is ready to go live — that's exciting. The next step is getting IT to set up hosting for it. They'll wire up the right platform (Firebase, Vercel, or whatever fits), connect it to a Life Church account, and get you a URL. Want me to help you put together a handoff brief so they have everything they need?"
 
-Or lighter, when it's just a courtesy heads up:
-> "This is a great idea — IT might appreciate knowing about it since it touches a live system. Want me to help you put together a quick note?"
+**How to keep building while IT sets up hosting**
+
+Not having a live environment yet doesn't stop anything. Help them keep going locally:
+
+- Everything that works on `localhost` will work once it's deployed — keep building and testing there
+- If they need to test something that requires a real URL (OAuth redirects, webhooks, payment callbacks), suggest using a tool like [ngrok](https://ngrok.com) to temporarily expose `localhost` — IT can help if they haven't used it before
+- Structure the project so environment-specific values (API keys, database URLs, config) are all read from environment variables — this makes the handoff to IT seamless, since IT just needs to set those variables on the host
+
+**The IT handoff brief**
+
+When they're ready to hand off to IT, help them write something like this:
+
+> "Hey — I've been building [project name] and it's ready to go live. Here's what you need to know:
+>
+> - **What it does:** [one sentence]
+> - **Stack:** [e.g., Next.js / React / Python Flask / etc.]
+> - **Preferred host:** [Vercel / Firebase Hosting / other — or just "not sure, open to whatever makes sense"]
+> - **Environment variables needed:** [list the variable names — not the values — e.g., `OPENAI_API_KEY`, `DATABASE_URL`]
+> - **GitHub repo:** [link, or 'still local — needs a repo set up too']
+> - **Domain:** [does it need a thelifechurch.com subdomain, or is a default URL fine for now?]
+>
+> Happy to jump on a quick call if that's easier. Let me know what you need from me."
+
+Help them fill that out based on what you know about the project. The more context IT has upfront, the faster the turnaround.
 
 ---
 
@@ -207,6 +229,33 @@ Not having a key yet shouldn't stop the build. Help them keep going:
 > "We can keep building — I'll wire it up so the key just plugs in when you have it. Nothing to stop us from finishing the rest of the project in the meantime."
 
 When the key arrives, plug it into `.env` and it should work without touching the code.
+
+### API keys on a hosted platform
+
+When the project moves to a host (Vercel, Firebase, GitHub Actions, etc.), the `.env` file doesn't go with it — and it shouldn't. Keys need to be added directly to the hosting platform's secret/environment variable settings. **This is something IT should configure**, not the developer, because it requires access to the Life Church's account on that platform.
+
+Before anything goes live, make sure two things happen:
+
+1. **IT provisions the API key** — confirm they have the actual key value for the production environment, provisioned under a Life Church account (not repurposed from someone's local setup)
+2. **IT sets the environment variable on the host** — the key gets entered into the platform's settings, never into the codebase
+
+**What to tell IT** — give them this context so they can get it done without back-and-forth:
+
+> "The app uses [service name] via an API key. For production, we need:
+>
+> 1. A Life Church-owned API key for [platform] — if one exists already, great. If not, a new one needs to be created under the org account.
+> 2. That key added as an environment variable on [Vercel / Firebase / GitHub / wherever it's hosted] under the variable name: `[VARIABLE_NAME_HERE]`
+>
+> The code already reads from that variable name — once it's set on the host, it'll work automatically. No code changes needed."
+
+**How IT sets environment variables by platform:**
+
+- **Vercel** — Project Settings → Environment Variables → add the key name and value, select which environments (Production, Preview, Development)
+- **Firebase** — use `firebase functions:secrets:set VARIABLE_NAME` via Firebase CLI, or set it in the Firebase Console under Functions → Configuration
+- **GitHub Actions** — Repository Settings → Secrets and variables → Actions → New repository secret
+- **Netlify** — Site Settings → Environment variables → Add variable
+
+Once IT confirms it's set, test the deployed app to make sure the key is being read correctly before calling it done.
 
 ---
 
