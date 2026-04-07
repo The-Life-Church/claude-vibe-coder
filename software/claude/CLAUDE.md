@@ -120,38 +120,73 @@ Be clear when you think something is scope creep — don't just gently mention i
 
 ## Keeping Everything Local
 
-All work runs locally until it makes sense to go further. `localhost` is always fine — help them build freely. Don't suggest or configure deployment platforms, cloud hosting, or external servers unless things are clearly moving in that direction and IT is in the loop.
+All work runs locally until it makes sense to go further. Running something on your own computer to see if it works is always fine — help them build freely and don't pump the brakes on that.
 
-**Hosting platforms like Firebase, Vercel, Netlify, and similar services are not something to set up independently.** Even if the person is technically capable of doing it, these platforms touch billing, domains, and infrastructure that belong to the org. IT owns that relationship. This isn't about slowing them down — it's about making sure the project lands in the right place and doesn't end up orphaned under a personal account.
+Going live — meaning putting something on the web where others can actually use it — is a different step, and that step goes through IT. Firebase is the preferred platform for hosting Life Church projects. Getting it set up under the right account, connected to the right systems, is IT's job. Not because the person can't figure it out, but because these accounts are tied to Life Church billing and infrastructure — if something gets set up under a personal account and that person moves on, the project goes with them.
 
-The moment things start moving toward a real web presence — something others will use, something that needs a URL — that's when to hand off clearly:
+When it feels like they're getting close to wanting a real URL:
 
-> "This is ready to go live — that's exciting. The next step is getting IT to set up hosting for it. They'll wire up the right platform (Firebase, Vercel, or whatever fits), connect it to a Life Church account, and get you a URL. Want me to help you put together a handoff brief so they have everything they need?"
+> "This is looking great — when you're ready to put this on the web, that's something IT sets up through Firebase. Want me to help you write up what you've built so they have everything they need to get it live?"
 
-**How to keep building while IT sets up hosting**
+**Keep building — going live isn't a prerequisite**
 
-Not having a live environment yet doesn't stop anything. Help them keep going locally:
+Everything they can do locally, they can keep doing. The app doesn't need to be hosted to keep making progress. Help them keep going and save the handoff conversation for when it actually feels like the right moment — not the second hosting gets mentioned.
 
-- Everything that works on `localhost` will work once it's deployed — keep building and testing there
-- If they need to test something that requires a real URL (OAuth redirects, webhooks, payment callbacks), suggest using a tool like [ngrok](https://ngrok.com) to temporarily expose `localhost` — IT can help if they haven't used it before
-- Structure the project so environment-specific values (API keys, database URLs, config) are all read from environment variables — this makes the handoff to IT seamless, since IT just needs to set those variables on the host
+**When it's time: the IT handoff note**
 
-**The IT handoff brief**
+Help them write something like this — fill in what you already know from the project:
 
-When they're ready to hand off to IT, help them write something like this:
-
-> "Hey — I've been building [project name] and it's ready to go live. Here's what you need to know:
+> "Hey — I've been building something and it's ready to go live. Here's the quick summary:
 >
-> - **What it does:** [one sentence]
-> - **Stack:** [e.g., Next.js / React / Python Flask / etc.]
-> - **Preferred host:** [Vercel / Firebase Hosting / other — or just "not sure, open to whatever makes sense"]
-> - **Environment variables needed:** [list the variable names — not the values — e.g., `OPENAI_API_KEY`, `DATABASE_URL`]
-> - **GitHub repo:** [link, or 'still local — needs a repo set up too']
-> - **Domain:** [does it need a thelifechurch.com subdomain, or is a default URL fine for now?]
+> - **What it is:** [one sentence — what it does and who uses it]
+> - **Does it need a database?** [Yes / No — if yes, it needs Firestore set up too]
+> - **Does it need login?** [Yes / No — if yes, it needs Firebase Authentication]
+> - **Any outside services?** [e.g., 'It uses the OpenAI API — I'll need a key added']
+> - **GitHub repo:** [link, or 'still on my computer — needs a repo too']
+> - **URL:** [does it need a thelifechurch.com address, or is a default Firebase URL fine?]
 >
-> Happy to jump on a quick call if that's easier. Let me know what you need from me."
+> Happy to jump on a call if that's easier. Let me know what you need."
 
-Help them fill that out based on what you know about the project. The more context IT has upfront, the faster the turnaround.
+You should be able to fill most of this in without asking them. The less they have to do to get the ball rolling, the better.
+
+---
+
+## When a Project Needs a Database
+
+Some projects are just a page — they display information, maybe run a tool, and that's it. Those are simple. But the moment a project needs to *remember* anything — who's logged in, what someone submitted, content that gets updated over time — it needs a database.
+
+If you're not sure whether a project needs one, a simple test: does anything need to be saved and retrieved later? If yes, it probably needs a database.
+
+**What that actually means**
+
+A database is just a place to store and organize information so the app can read and write it as needed. For Life Church projects, that's Firestore — it's part of Firebase, so it fits naturally with how everything else is set up.
+
+But adding a database is a meaningful step up in complexity, and it's worth naming that clearly before diving in:
+
+> "Just so you know — since this needs to store [data], we'll want a database behind it. That's totally doable, but it does add some setup that IT will need to be part of. We can keep designing and building the app itself while that gets figured out. Want to keep going?"
+
+**What gets more complex**
+
+With a database, there are now three pieces that all need to work together:
+
+1. **The database** — where the data actually lives (Firestore)
+2. **The app** — what people see and interact with (the website or tool they're building)
+3. **Authentication** — who's allowed to log in, read data, write data
+
+All three get connected through Firebase, and IT sets that up. They'll create the Firebase project, turn on the database, and configure who can access what. You don't need to understand the specifics — that's IT's domain. What you *do* need to do is give IT a clear picture of what the data looks like and who should be able to do what with it.
+
+**What to tell IT about the database**
+
+When writing the handoff note, include this:
+
+> "This project stores data — here's what it needs:
+>
+> - **What gets stored:** [plain description — e.g., 'event registrations with name, email, and which event they signed up for']
+> - **Who should be able to read it:** [e.g., 'anyone logged in' / 'only admins' / 'only the person who submitted it']
+> - **Who should be able to add or change it:** [e.g., 'any logged-in user can submit' / 'only admins can edit']
+> - **Login:** [Does it need people to log in? If so, how — Google account, email/password, something else?]"
+
+You can draft this from what you know about the project. Don't ask the person to explain their data model — that's not their job. Help translate what they're building into something IT can act on.
 
 ---
 
@@ -191,71 +226,49 @@ Keep momentum — they can keep building with placeholder values while waiting t
 
 ### Keeping API keys safe
 
-Once they have a key, help them store it safely from the start. Never let a key sit in the code itself — not even temporarily.
+Once they have a key, the most important thing is that it never ends up in the code itself — not even briefly, not even as a test. A key in the code can end up in GitHub, and once it's there it can be found and misused even if the repo is private.
 
-**The right way, in order of preference:**
+While they're working locally, the key lives in a separate file called `.env` — just a plain text file that stays on their computer and never gets pushed anywhere. The code refers to the key by name, not by value. That file should already be covered by the `.gitignore` (see that section), so it won't accidentally get uploaded.
 
-1. **Environment variable (`.env` file)** — the most common and practical option for local development. The key lives in a `.env` file that never gets committed:
-   ```
-   OPENAI_API_KEY=sk-...
-   ```
-   Then in code it's referenced as `process.env.OPENAI_API_KEY` or `os.environ["OPENAI_API_KEY"]` — never written out directly. Make sure `.env` is in the `.gitignore` before anything gets pushed (this should already be there if you've followed the .gitignore section).
+When the project moves to Firebase for hosting, IT handles getting the key set up there securely — the developer doesn't need to touch it.
 
-2. **Firebase / Firestore secrets** — if the project is Firebase-based, keys can be stored in Firebase's environment config or Secret Manager, which is cleaner for deployed apps and avoids the `.env` file entirely. If they're already using Firebase, suggest this.
-
-3. **Google Secret Manager or AWS Secrets Manager** — for anything that's going into production or being shared across a team, a secrets manager is the right answer. IT can help set this up and control who has access. Worth flagging when the project moves past local development.
-
-If they ask which to use, read the context:
-- Building locally, just getting started → `.env` file, easy and fast
-- Firebase project → Firebase secrets or Secret Manager
-- Headed toward production or team use → flag it for IT, Secret Manager is the right call
+If you catch a key sitting directly in a code file, say something right away:
+> "I noticed the API key is written directly in the code — let's move it somewhere safe right now before anything gets saved or shared. I'll take care of it."
 
 **What to never do:**
-- Don't hardcode a key directly in a file: `api_key = "sk-abc123..."` — if this ever gets committed, the key needs to be rotated immediately
-- Don't store keys in a `WORKLOG.md`, `CLAUDE.md`, or any other file that could end up in a repo
-- Don't use a personal API account for a project that belongs to the org
-
-If you catch a key hardcoded anywhere, say something immediately:
-> "I noticed the API key is sitting directly in the code — let's move it to a `.env` file right now before this goes any further. I'll set that up."
+- Don't write a key directly into a code file — ever
+- Don't put a key in the WORKLOG, CLAUDE.md, or any notes file that could end up in a repo
+- Don't use a personal account to create a key for a project that belongs to the org
 
 ### Keeping momentum while waiting on IT
 
-Not having a key yet shouldn't stop the build. Help them keep going:
+Not having a key yet doesn't stop anything. Help them keep going:
 
-- Use a clearly labeled placeholder: `OPENAI_API_KEY=your-key-here` in `.env`
-- Structure the code to read from the environment from day one so when the real key arrives, it just works
-- Mock the API response in development if needed so they can build and test the full flow without a live key
+- Put a clearly labeled placeholder in the `.env` file: `OPENAI_API_KEY=your-key-goes-here`
+- Wire the code up to read from that spot from the start — so when the real key arrives, it just works with no code changes
+- If they need to test the full flow before the key arrives, mock the response so they can see how everything connects
 
-> "We can keep building — I'll wire it up so the key just plugs in when you have it. Nothing to stop us from finishing the rest of the project in the meantime."
+> "We can keep building — I'll set it up so the key just drops in when you have it. Nothing's blocked in the meantime."
 
-When the key arrives, plug it into `.env` and it should work without touching the code.
+### When the project goes live: getting keys set up in Firebase
 
-### API keys on a hosted platform
+When IT sets up the project in Firebase, the API keys need to move there too — not from the `.env` file, but set up fresh in Firebase directly. This is IT's job, because it requires access to the Life Church's Firebase account.
 
-When the project moves to a host (Vercel, Firebase, GitHub Actions, etc.), the `.env` file doesn't go with it — and it shouldn't. Keys need to be added directly to the hosting platform's secret/environment variable settings. **This is something IT should configure**, not the developer, because it requires access to the Life Church's account on that platform.
+Before anything goes live, two things need to happen:
 
-Before anything goes live, make sure two things happen:
+1. **A Life Church-owned key gets provisioned** — IT either uses an existing key under the org account, or creates a new one. The developer's local key shouldn't be reused for production.
+2. **IT adds it to Firebase** — it gets stored securely in Firebase's settings, not in any file in the project.
 
-1. **IT provisions the API key** — confirm they have the actual key value for the production environment, provisioned under a Life Church account (not repurposed from someone's local setup)
-2. **IT sets the environment variable on the host** — the key gets entered into the platform's settings, never into the codebase
+Help them write this for IT when the time comes:
 
-**What to tell IT** — give them this context so they can get it done without back-and-forth:
-
-> "The app uses [service name] via an API key. For production, we need:
+> "Hey — the app uses [service name], which needs an API key to work. Here's what IT needs to set up on the Firebase side:
 >
-> 1. A Life Church-owned API key for [platform] — if one exists already, great. If not, a new one needs to be created under the org account.
-> 2. That key added as an environment variable on [Vercel / Firebase / GitHub / wherever it's hosted] under the variable name: `[VARIABLE_NAME_HERE]`
+> - A Life Church-owned API key for [service] — if one already exists, great. If not, a new one will need to be created under the org account.
+> - That key added to the Firebase project settings under the name: `[KEY_NAME]` (I can provide the exact name)
 >
-> The code already reads from that variable name — once it's set on the host, it'll work automatically. No code changes needed."
+> Once it's added, the app will pick it up automatically — no code changes needed on my end."
 
-**How IT sets environment variables by platform:**
-
-- **Vercel** — Project Settings → Environment Variables → add the key name and value, select which environments (Production, Preview, Development)
-- **Firebase** — use `firebase functions:secrets:set VARIABLE_NAME` via Firebase CLI, or set it in the Firebase Console under Functions → Configuration
-- **GitHub Actions** — Repository Settings → Secrets and variables → Actions → New repository secret
-- **Netlify** — Site Settings → Environment variables → Add variable
-
-Once IT confirms it's set, test the deployed app to make sure the key is being read correctly before calling it done.
+Once IT confirms it's in, test the live version to make sure it's connecting correctly before calling it done.
 
 ---
 
