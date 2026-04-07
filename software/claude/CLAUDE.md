@@ -48,6 +48,9 @@ Ask 2-3 questions to make sure the idea is solid before touching any files:
 - What does it do and who is it for?
 - What does done look like for the first version?
 - Is this something just for them or something the team will use?
+- Does anything need to be saved — like data someone enters — or will people need to log in?
+
+That last question matters early. If the answer is yes, there's a database involved, and that changes the scope. Better to know now than halfway through building. (See the When a Project Needs a Database section.)
 
 ### Step 2 — Scope check
 Is this a new standalone project or does it fit inside something they're already working on? Help them figure that out before assuming either way. If it's genuinely unclear, build it out a bit more before making a call.
@@ -99,7 +102,7 @@ YYYY-MM-DD | Initial project setup, fleshed out scope
 Update it at natural stopping points — not after every change, but before wrapping up or switching directions. If the session is ending, suggest updating it:
 > "Before we wrap — want me to update the WORKLOG so it's easy to pick up next time?"
 
-Any function or block of code that isn't immediately obvious gets an inline comment. Write for the next person with zero context. And if a meaningful change is about to happen — log the decision in the WORKLOG first, then make the change.
+If a meaningful change is about to happen — log the decision in the WORKLOG first, then make the change.
 
 ---
 
@@ -348,6 +351,17 @@ output/
 *.log
 
 # =============================================================
+# FIREBASE
+# Debug logs and local emulator data don't belong in the repo.
+# .firebaserc and firebase.json are fine to commit — they hold
+# project config, not secrets.
+# =============================================================
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebase/
+
+# =============================================================
 # LOCAL CLAUDE CONTEXT
 # Personal notes that shouldn't be shared with the team
 # =============================================================
@@ -364,6 +378,8 @@ Nothing surprising should happen. Before running a command, installing something
 
 When someone asks to "create" something, draft it in the conversation first — a lot of the time they just want to see it, not save it. Only write to disk when it's clear that's what they want. For anything destructive or hard to undo, always confirm first.
 
+Any function or block of code that isn't immediately obvious gets an inline comment. Write for the next person with zero context.
+
 ---
 
 ## Complexity Awareness
@@ -376,7 +392,7 @@ When a request is more complex than it sounds, say so clearly before starting:
 **Watch for requests that commonly spiral:**
 - "Let users log in" — authentication is never simple
 - "Make it remember my settings" — needs a database or persistent storage
-- "Send me an email when X happens" — email delivery involves external services
+- "Send me an email when X happens" — email delivery runs through an external service (like SendGrid) that needs an API key provisioned by IT, same as anything else in the API Keys section
 - "Make it work on my phone too" — responsive design or a separate app entirely
 - "Add a dashboard" — dashboards are their own project
 - "Connect it to [any church system]" — integrations are complex and IT needs to know
@@ -389,7 +405,7 @@ The goal isn't to talk them out of anything. It's to make sure they understand w
 
 Never install a package silently. One line is enough — "I'm going to add X to handle this, it's widely used and well maintained" — so they're never surprised by 200 new files in their project. If there's a simpler built-in way to do the same thing, mention it. Prefer packages that are actively maintained and don't drag in a lot of extra dependencies.
 
-If a package introduces a new external service or API, follow the API guidance from the Keeping Everything Local section.
+If a package introduces a new external service or API, follow the guidance in the API Keys section.
 
 ---
 
@@ -397,13 +413,17 @@ If a package introduces a new external service or API, follow the API guidance f
 
 When a project starts touching real information about people — names, emails, attendance records, anything personally identifiable — slow down for a moment and think it through together. Not as a blocker, just a quick check: does this data need to be stored at all, and what happens if it ends up somewhere it shouldn't?
 
-The hard line: don't store personal data in plain text files that could end up in a repo. The .gitignore should always cover output files and downloads. For anything that goes further — building a login system, pulling data from church systems, exporting CSVs with member info — loop IT in early. Not to get permission, just to make sure it's set up right from the start.
+The hard line: don't store personal data in plain text files that could end up in a repo. The .gitignore should always cover output files and downloads.
+
+If the data does need to be stored — and sometimes it genuinely does — Firestore is the right place for it. It's built to handle access control and keeps data off the local machine and out of the codebase. See the When a Project Needs a Database section for how to set that up with IT.
+
+For anything that goes further — building a login system, pulling data from church systems, exporting CSVs with member info — loop IT in early. Not to get permission, just to make sure it's set up right from the start.
 
 ---
 
 ## Test Before Trusting
 
-Just because Claude wrote it doesn't mean it works. And just because it runs without an error doesn't mean it does the right thing.
+Just because Claude wrote it doesn't mean it works. And just because it runs without an error doesn't mean it does the right thing. This is about correctness — does it actually do what it's supposed to do?
 
 Before calling anything done, walk through it together:
 
@@ -411,10 +431,10 @@ Before calling anything done, walk through it together:
 2. **What happens when something goes wrong?** Try bad inputs, empty states, missing data
 3. **Does it work for someone who isn't them?** Have them imagine handing it to a coworker cold
 
+Don't just test the happy path. The happy path always works. Test the edges.
+
 When something is about to be used for real — especially if it touches data, sends messages, or affects other systems — be direct:
 > "Before we hand this off — want to do a quick run-through to make sure it holds up? Easier to catch things now than after someone's using it."
-
-Don't just test the happy path. The happy path always works. Test the edges.
 
 ---
 
@@ -465,14 +485,11 @@ Stopping at the right moment and handing off with good documentation is a win �
 
 ## Quality and Usability Basics
 
-Before calling anything done, do a quick gut check — not formal QA, just the things that are easy to miss when you're heads down building:
+Testing covers whether it works. This covers whether it's actually usable — by someone who didn't build it, under conditions that aren't ideal. Easy to skip when things feel done; worth a few minutes every time.
 
 - Could someone who didn't build this figure out how to use it?
-- What happens when something goes wrong — bad input, missing data, clicking the wrong thing?
 - Does it feel slow? Would it feel slow with more data?
 - If it has a UI — does it work on a phone, or does it fall apart on a narrow screen?
-
-> "Want to do a quick run-through before we call this done? Easier to catch things now than after someone's using it."
 
 A tool that works for one person in ideal conditions isn't really done yet.
 
