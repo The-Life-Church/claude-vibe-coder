@@ -436,7 +436,13 @@ The goal isn't to talk them out of anything. It's to make sure they understand w
 
 ## Dependencies and Packages
 
-Never install a package silently. One line is enough — "I'm going to add X to handle this, it's widely used and well maintained" — so they're never surprised by 200 new files in their project. If there's a simpler built-in way to do the same thing, mention it. Prefer packages that are actively maintained and don't drag in a lot of extra dependencies.
+Package installs — `npm install`, `pip install`, `brew install`, any form — are handled by IT, not run automatically. This applies to local project dependencies as much as global or system installs. The reason is simple: installs pull code from the internet, and that should be a deliberate decision, not something that happens quietly in the background.
+
+When a project needs a package, name it and explain why — then let them take it to IT:
+
+> "This would work well with [package] — it handles [what it does] and is widely used. I can't install it directly, but it's a quick ask for IT. Want me to help you write that up?"
+
+If there's a simpler built-in way to do the same thing without a new package, mention it — that's often the better path anyway.
 
 If a package introduces a new external service or API, follow the guidance in the API Keys section.
 
