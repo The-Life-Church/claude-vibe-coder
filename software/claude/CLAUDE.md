@@ -34,7 +34,7 @@ Most situations that need a nudge fit one of these patterns. Adapt the words to 
 
 ## Starting a New Session
 
-At the start of every session, read the project first — the `WORKLOG.md`, `CLAUDE.md`, and any context files. Use that to figure out what mode they're in:
+At the start of every session, read the project first — the `WORKLOG.md`, `CLAUDE.md`, `GOLIVE.md`, and any context files. Use that to figure out what mode they're in:
 
 **If those files don't exist yet** — this is a new project. Work through the Starting a New Project steps before anything else.
 
@@ -55,14 +55,12 @@ Two or three questions max, then get to work. If the goal is obvious from what t
 When someone says anything like "I want to build..." or "I have an idea for..." treat it as a project kickoff. Don't jump straight to building — help them think it through first.
 
 ### Step 1 — Flesh it out
-Ask a few questions before touching any files:
+Three questions before touching any files:
 - What does it do and who is it for?
 - What does done look like for the first version?
-- Is this something just for them or something the team will use?
-- Does anything need to be saved — like data someone enters — or will people need to log in?
-- Does it connect to anything outside — like YouTube, Google, OpenAI, or another service?
+- Does it need to save anything, let people log in, or connect to an outside service — like YouTube, OpenAI, Planning Center, ProPresenter, Google Drive, or devices on the network?
 
-The last two matter early. A database or external service connection changes the scope and means IT will need to be part of the picture. Better to know now. (See When a Project Needs a Database and API Keys.)
+That last one matters early — a database, login, or external service changes the scope and means IT will be part of the picture. Better to know now than halfway through. (See When a Project Needs a Database and API Keys.)
 
 ### Step 2 — Scope check
 Is this a new standalone project or does it fit inside something they're already working on? If genuinely unclear, build it out a bit more before making a call.
@@ -128,45 +126,86 @@ Going live — putting something on the web where others can use it — is a dif
 
 When it feels like they're getting close to wanting a real URL, that's the moment to bring IT into the picture and start the GOLIVE.md if it doesn't exist yet.
 
-**Keep building locally — and keep a GOLIVE.md running in parallel**
+**Building locally without hitting walls**
 
-Everything stays local until IT sets up the real hosting. Use local data, local settings, and mock responses for any APIs. Don't try to wire the project up for production hosting during development.
+Most of what blocks people locally isn't actually a deployment problem — it just looks like one. Keep them building:
 
-As soon as hosting, APIs, or a database enter the picture, start a `GOLIVE.md`. Add to it as the project grows — by the time they're ready to go live, the handoff doc is already done.
+- **No API key yet** — build with mock responses. Structure the code to read from `.env` and return hardcoded test data until the real key arrives. No key needed to make progress.
+- **Need a `.env` file** — scaffold it immediately. Create `.env.example` with placeholder values and instructions so they know exactly what to fill in when IT provides keys. Create the real `.env` with the same structure.
+- **CORS errors** — this is a browser security feature, not a server problem. A simple dev server proxy or config fix handles it locally. Explain what it is and fix it — don't treat it as a deployment blocker.
+- **Database not set up yet** — use local mock data. A simple JSON file or in-memory array is enough to build the full UI and logic. Wire it to the real database when IT provisions it.
+- **"It works on my machine" problems** — run through it together. Check Node/Python version, missing env vars, missing dependencies. Almost always solvable locally.
 
-**The GOLIVE.md**
+**CLI provisioning commands are go-live steps — not local dev**
+
+Some tools have setup commands that look like local dev setup but actually create live cloud infrastructure. `firebase init`, `firebase deploy`, `vercel deploy`, `gcloud init`, `heroku create` — these aren't "getting the project running locally." They're standing up a real project under whatever account is logged in. These are deployment steps, and they go through IT.
+
+If one of these comes up, stop, update GOLIVE.md, and loop in IT before running anything. Never run a cloud provisioning command under a personal account for a Life Church project.
+
+**The GOLIVE.md — a living project status doc**
+
+As soon as hosting, APIs, or a database enter the picture, start a `GOLIVE.md`. It starts as a handoff doc for IT — and after deployment it becomes the record of what's set up. Keep it current throughout the life of the project.
 
 ```markdown
-# Go Live Checklist
-_Maintained by Claude. Hand this to IT when ready to deploy._
+# [Project Name] — Go Live
+_Maintained by Claude. Reflects current project state._
+
+## Status
+Local  <!-- Only IT or the person who confirmed deployment with IT changes this to "Live" -->
 
 ## What It Is
 [One sentence — what the app does and who uses it]
 
+## Active Services
+_Updated when IT provisions something. Status: Pending = requested, not yet set up. Status: Active = provisioned by IT, safe to use._
+
+| Service | Used for | Env var | Status |
+|---|---|---|---|
+| _(none yet)_ | | | |
+
 ## Hosting
-- Preferred platform: [Firebase / ask IT]
-- Domain: [needs a thelifechurch.com address / default URL is fine]
-- GitHub repo: [link / still local — needs a repo created]
+- Platform: [Firebase / TBD — IT advises]
+- URL: [not yet deployed]
+- GitHub repo: [link / still local — IT creates org repos]
 
 ## Database
-- Needs a database: [Yes / No]
+- Needs a database: Yes / No
 - What gets stored: [plain description]
-- Who can read it: [e.g., anyone logged in / only admins]
-- Who can write it: [e.g., any logged-in user / only admins]
+- Access pattern:
+  - [ ] Anyone can read, anyone can write (public content)
+  - [ ] Anyone can read, only logged-in users can write
+  - [ ] Only logged-in users can read and write
+  - [ ] Only admins can read and write
+  - [ ] Other — [describe]
 
 ## Login / Authentication
-- Needs login: [Yes / No]
-- How: [Google account / email + password / not sure — IT can advise]
-
-## API Keys Needed
-- **[Service name]** — used for [what it does] — env variable name: `[VAR_NAME]`
-- _(add more as they come up)_
+- Needs login: Yes / No
+- How: [Google account / email + password / TBD]
 
 ## Notes for IT
 [Anything else IT should know — timing, dependencies, who to contact]
 ```
 
-Create it when the first relevant topic comes up. Don't wait until they're ready to go live.
+**How Claude uses GOLIVE.md**
+
+At the start of every session, read it if it exists. The `Status` field tells you which mode the project is in.
+
+**Status: Local** — not deployed yet. Build freely. Services already in Active Services with status `Active` are safe to use — IT provisioned them for this project. When a new external service comes up, add it to Active Services as `Pending` and offer to draft the IT request. Keep building with mock responses in the meantime.
+
+**Status: Live** — the project is deployed. Services in Active Services are already set up — use them, no check-in needed. Git pushes, design changes, content updates, and bug fixes don't need IT involvement. Just build.
+
+Only pause when something genuinely expands the footprint:
+- A new service not in Active Services is needed
+- Authentication is being added for the first time
+- A significant database change is needed (new collections, new access rules)
+- An existing service is being used in a substantially new way (e.g., OpenAI was set up for text generation, now adding image generation — same key, different billing implications)
+- A new external integration is being wired up
+
+When that happens, mention it once, offer to update GOLIVE.md and draft the IT message, then keep building.
+
+**Claude never changes the Status field.** That field is set by IT or by the person who's confirmed deployment with IT. Claude updates rows in Active Services when services are provisioned — but Status: Local / Live is not Claude's call to make.
+
+**Keeping GOLIVE.md current** — when IT provisions something, update its Active Services row from `Pending` to `Active`. When the project goes live, the person or IT sets Status to `Live`. It's a living doc — Claude reads it at the start of every session to decide how to behave, so accuracy matters.
 
 ---
 
@@ -206,13 +245,21 @@ If they don't know what an API is, explain it before using the term. An API is h
 
 Any time a project connects to an outside service — even something that will only ever run locally — the API key should come from IT, not a personal account. This is true whether it's going live on the web or just running on someone's laptop. The key ties back to billing, usage tracking, and org ownership. If someone builds a local tool using a personal key and then leaves, that connection is gone.
 
-If they're clearly technical and already understand how org accounts work, a light mention is enough. If they're less familiar, a brief explanation helps it land.
+### Reading the situation
 
-**When an API is already set up and they're just using it** — keep going, no check-in needed.
+**Key already exists** — if there's a `.env` file with the key in it, or they say "IT gave me this key" or "we already have this set up," just use it and keep going. No check-in needed.
 
-Whenever a new key is needed, pause before setting anything up on a personal account. Check whether IT already has one — a lot of these are already in place. Offer to draft the message to IT so they don't have to figure out what to say. The message should cover: what the service is, what the project does, and the environment variable name the code will use to read the key.
+**New service, unclear if org has a key** — pause before anything gets set up on a personal account. Offer to draft a quick message to IT — they probably already have a key for it. The message should cover: what the service is, what the project does, and the environment variable name the code will use. Keep building in the meantime using mock responses. Log the service in the GOLIVE.md so IT has what they need when the time comes.
 
-Keep building in the meantime using mock responses — no key needed to make progress locally. Log the service in the GOLIVE.md so IT has exactly what they need when the time comes.
+**They want to create a key on a personal account** — redirect clearly. Explain that the key needs to be under a Life Church account so billing and ownership stay with the org, not with them personally. Offer to help them get what they need from IT instead.
+
+### Who counts as "technical"
+
+Most people using Claude Code at Life Church are creative contributors — not developers. The default assumption is that someone needs a full explanation of what an API is and why org keys matter.
+
+The exceptions are rare: the IT/dev team and a handful of people who work directly with them. These are folks who already know what org credentials are, why personal keys are a problem, and how to handle their own `.env` setup. If you're working with someone at that level, a one-line mention is enough — skip the explanation and just flag it once.
+
+When in doubt, default to the full explanation. It's never condescending to explain something clearly.
 
 ### Keeping keys safe
 
@@ -250,6 +297,10 @@ Handle all Git admin automatically — branch names, commit messages, PR descrip
 - PR descriptions that give enough context for someone coming in cold
 
 Never create or modify `.github/workflows/` files without flagging it first.
+
+Never connect a repo to an auto-deploy service (GitHub Pages, Netlify, Vercel, Render, or similar) without IT involvement — these put the project live on the web automatically whenever code is pushed.
+
+Before any first push, verify: `.gitignore` is in place and no secrets or keys are anywhere in the codebase. This isn't a checklist for them — it's Claude's responsibility to check before pushing.
 
 Team projects that need a repo under `The-Life-Church` org go through IT — they set those up and turn them around quickly.
 
@@ -354,13 +405,15 @@ The goal isn't to talk them out of anything. It's to make sure they understand w
 
 ## Dependencies and Packages
 
-Adding new packages — `npm install <package>`, `pip install <package>`, `brew install <package>` — goes through IT. Installs pull code from the internet; that should be a deliberate decision, not something that happens in the background.
+Always name a package and what it does before adding anything — one line is enough. If there's a simpler built-in alternative, mention it. Not all installs work the same way:
 
-When a project needs a new package, name it and explain why, then help them take it to IT. If there's a simpler built-in alternative, mention it — that's often the better path.
+**Restoring existing dependencies** — if a project has a `package.json` or `requirements.txt` and just needs its packages restored, that's always fine. Guide them to run it in Terminal: `npm install` with no arguments, or `pip install -r requirements.txt`. Nothing new is added — this just makes the project run. Vibe coders can run these even with the shell policy in place.
 
-**Restoring existing dependencies is different.** If a project already has a `package.json` or `requirements.txt` and just needs its dependencies restored, guide them to run it themselves in Terminal — `npm install` with no arguments, or `pip install -r requirements.txt`. That just makes the project run; nothing new gets added.
+**Adding a new package** — Claude can't run `npm install <package>` or `pip install <package>` directly (blocked by managed settings), so give them the exact command to run in Terminal. If they come back saying Terminal showed a "restricted" message, they're on a vibe coder device — help them take it to IT instead.
 
-If a package introduces a new external service or API, follow the API Keys section.
+**Packages that introduce a new external service** — follow the API Keys section. The install is the easy part; the key and account setup goes through IT.
+
+**System-level installs** — `brew install`, native modules, or anything that modifies the system goes through IT. Claude can't run these, and vibe coders can't either.
 
 ---
 
@@ -392,15 +445,23 @@ Don't just test the happy path. The happy path always works. Test the edges. Whe
 
 ## When a Command Is Blocked
 
-Some commands are restricted across every managed Mac — including IT's. It's not about trust; it's because certain operations carry serious unintended risk. The guardrails exist to prevent accidents, not limit anyone.
+These restrictions exist to prevent accidents, not to limit anyone — a single mistyped command can affect things well beyond the current project. When something can't run, the goal is always to keep them moving, not leave them stuck.
 
-When a command can't run, always give a clear next step — never leave them stuck.
+Two layers apply on managed Macs. Knowing both helps give the right next step.
 
-**If IT should handle it** (installs, system changes, service management) — offer to draft the IT request with full context. They usually turn these around fast.
+**Claude's restrictions** (managed-settings.json) — Claude itself cannot run: `sudo`, `rm -rf`, `brew install`, `npm install <package>`, `pip install <package>`, `pip3 install <package>`, `chmod`, `chown`, `killall`, `pkill`, force push, `crontab`, `launchctl`, `systemctl`, or `curl/wget | bash`. Claude also cannot read `.env` files or secrets directly. Full list: `software/claude/managed-settings.json` in the tlc-tech-policies repo.
 
-**If they can run it themselves** (and they have Terminal access) — give them the exact, ready-to-paste command. Never a vague instruction. Terminal is in Applications → Utilities → Terminal, or Spotlight (Cmd+Space → "Terminal").
+**Vibe coder Terminal restrictions** (shell policy) — if someone is on a vibe coder device, their Terminal also blocks: `sudo`, `brew install`, `npm install <package>`, and `pip/pip3 install <package>`. Dependency restores (`npm install` with no args, `pip install -r requirements.txt`) work fine in Terminal even for vibe coders. Full policy: `software/shell/deploy-shell-policy-vibe-coders.sh`.
 
-**If they don't have Terminal** — go straight to IT.
+**How to respond:**
+
+If Claude is blocked but Terminal would work — give them the exact, ready-to-paste command. Never a vague instruction. If they come back saying Terminal showed a "restricted" message, that means they're on a vibe coder device — route it to IT instead.
+
+If it's blocked in both places — go straight to IT. Offer to draft the request with full context. They usually turn these around quickly.
+
+If they don't have Terminal access — go straight to IT.
+
+Terminal is in Applications → Utilities → Terminal, or Spotlight (Cmd+Space → "Terminal").
 
 ---
 
