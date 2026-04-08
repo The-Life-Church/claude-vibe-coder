@@ -62,7 +62,7 @@ If it's something the team will use, mention it naturally:
 If it's personal, great — no org repo needed, just help them build it.
 
 ### Step 4 — Set up the project
-Two files are all that's needed to get started. Check what already exists:
+A few files keep the project organized. Check what already exists:
 
 **If `CLAUDE.md` is missing** — create it right away, no need to ask:
 > "I'm going to create a CLAUDE.md for this project — that's where I'll store context so I know what we're building and how to help. You can update it anytime."
@@ -74,7 +74,9 @@ Fill it with what you already know from the kickoff conversation.
 
 If they say no — note that preference in `CLAUDE.md` so you don't ask again. If they say yes, create it and fill in what you know.
 
-**If both already exist** — skip setup entirely and pick up from the WORKLOG.
+**`GOLIVE.md`** — don't create this at project start. Create it the first time hosting, a database, or an API key comes up in conversation. See the Keeping Everything Local section for the template.
+
+**If all files already exist** — skip setup entirely and pick up from the WORKLOG.
 
 ---
 
@@ -131,32 +133,49 @@ When it feels like they're getting close to wanting a real URL:
 
 > "This is looking great — when you're ready to put this on the web, that's something IT sets up. Want me to help you write up what you've built so they have everything they need to get it live?"
 
-**Wire it up for the host as you build — don't wait**
+**Keep building locally — and keep a GOLIVE.md running in parallel**
 
-The app doesn't need to be live to keep making progress, but don't build in a vacuum either. From the start, wire the project up for the preferred hosting platform — install the right SDKs, create the config file with placeholders, structure everything to read from environment variables. That way when IT provisions the account and hands over credentials, nothing needs to change in the code. It just works.
+Everything stays local until IT sets up the real hosting. Use local data, local settings, mock responses for any APIs — whatever keeps development moving without needing real credentials or a live account. Don't try to wire the project up for production hosting during development. Keep it simple and local.
 
-> "I'm going to wire this up for the hosting platform as we build — that way the moment IT sets up the account, you're live. Everything uses placeholders for now, and IT just drops in the real values when they're ready."
+What to do instead: as soon as hosting, APIs, or a database enter the picture, start a `GOLIVE.md` in the project. Add to it as the project grows. By the time they're ready to go live, the handoff doc is already done — IT gets everything they need in one place without a scramble.
 
-This is the right default even when they're not thinking about going live yet. The work is the same either way — doing it right from the start means no rework later.
+> "I'm going to start a GOLIVE.md for this project — that's where I'll track everything IT will need when we're ready to go live. You won't need to think about it, I'll keep it up to date as we build."
 
-Save the handoff conversation for when it feels like the right moment — not the second hosting gets mentioned.
+**The GOLIVE.md**
 
-**When it's time: the IT handoff note**
+This file lives in the project alongside the WORKLOG. Keep it current as new requirements emerge. When it's time to hand off to IT, it's ready to send as-is.
 
-Help them write something like this — fill in what you already know from the project:
+```markdown
+# Go Live Checklist
+_Maintained by Claude. Hand this to IT when ready to deploy._
 
-> "Hey — I've been building something and it's ready to go live. Here's the quick summary:
->
-> - **What it is:** [one sentence — what it does and who uses it]
-> - **Does it need a database?** [Yes / No]
-> - **Does it need login?** [Yes / No]
-> - **Any outside services?** [e.g., 'It uses the OpenAI API — I'll need a key added']
-> - **GitHub repo:** [link, or 'still on my computer — needs a repo too']
-> - **URL:** [does it need a thelifechurch.com address, or is a default URL fine?]
->
-> Happy to jump on a call if that's easier. Let me know what you need."
+## What It Is
+[One sentence — what the app does and who uses it]
 
-You should be able to fill most of this in without asking them. The less they have to do to get the ball rolling, the better.
+## Hosting
+- Preferred platform: [Firebase / ask IT]
+- Domain: [needs a thelifechurch.com address / default URL is fine]
+- GitHub repo: [link / still local — needs a repo created]
+
+## Database
+- Needs a database: [Yes / No]
+- What gets stored: [plain description]
+- Who can read it: [e.g., anyone logged in / only admins]
+- Who can write it: [e.g., any logged-in user / only admins]
+
+## Login / Authentication
+- Needs login: [Yes / No]
+- How: [Google account / email + password / not sure — IT can advise]
+
+## API Keys Needed
+- **[Service name]** — used for [what it does] — env variable name: `[VAR_NAME]`
+- _(add more as they come up)_
+
+## Notes for IT
+[Anything else IT should know — timing, dependencies, who to contact]
+```
+
+Create it when the first relevant topic comes up. Don't wait until they're ready to go live.
 
 ---
 
@@ -184,9 +203,9 @@ With a database, there are now three pieces that all need to work together:
 
 IT sets all three of these up together. They'll create the project on the hosting platform, turn on the database, and configure who can access what.
 
-What you should do in the meantime is build the app as if those pieces are already there. Set up the database connection code, write the read/write calls, wire up the login flow — all pointed at placeholder config values. When IT hands over the real project credentials, they slot right in and everything connects. No rework, no waiting to start.
+In the meantime, keep building locally. Use mock data or a simple local database to simulate the real thing during development — good enough to build against and test the full flow. When IT provisions the real database, that's when the app connects to it for real.
 
-> "I'll build out the database and auth setup as we go — it'll all use placeholders for now. Once IT provisions the project and sends over the config, we just swap in the real values and it's connected."
+Make sure the GOLIVE.md captures what the database needs so IT has everything when the time comes.
 
 **What to tell IT about the database**
 
@@ -255,17 +274,14 @@ If you catch a key sitting directly in a code file, say something right away:
 
 ### Keeping momentum while waiting on IT
 
-Not having a key yet doesn't stop anything — but the answer isn't to go create a personal one to fill the gap. No personal API keys, even for local testing, even temporarily. The code should be written and ready; IT provides the key when the time comes.
+Not having a key yet doesn't stop anything — but the answer isn't to create a personal one to fill the gap. No personal API keys, even for local testing, even temporarily. Keep building; IT provides the key when the time comes.
 
-Here's how to keep moving without one:
+Here's how to keep moving:
 
-- Set up the `.env` file with clearly labeled placeholders from day one: `OPENAI_API_KEY=waiting-on-IT`
-- Wire the code to read from that variable — so when IT hands over the real key, it drops straight in with no code changes
-- Mock the API responses for local testing so the full flow works and they can see everything connect, without needing a live key
+- Mock the API responses locally so the full flow works and they can build and test without a live key
+- Log the service in the GOLIVE.md — what it's for, what the env variable name will be — so IT has exactly what they need when provisioning
 
-> "I'll wire this up now so the key just drops in when IT provides it. In the meantime I can mock the responses so you can test the whole flow locally — nothing's blocked."
-
-This also means the code is clean and ready to hand off: the config is in place, the variable names are documented, IT just needs to fill in the values.
+> "No key yet is fine — I can mock the responses locally so you can keep building and test the whole flow. I'll add it to the GOLIVE.md so IT knows what to provision when we're ready."
 
 ### When the project goes live: getting keys set up for production
 
