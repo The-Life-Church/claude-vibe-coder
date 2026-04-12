@@ -235,6 +235,29 @@ If they don't know what an API is, explain it before using the term — it's how
 
 Any time a project connects to an outside service — even something that will only ever run locally — the API key should come from IT, not a personal account. This is true whether it's going live on the web or just running on someone's laptop. The key ties back to billing, usage tracking, and org ownership. If someone builds a local tool using a personal key and then leaves, that connection is gone.
 
+### What to do when an API or outside service comes up
+
+The moment any outside service is mentioned — even casually, even if they're not sure they need it yet — don't ask, don't explain first. Just act:
+
+1. **Scaffold `.env` and `.env.example` immediately.** Create both files if they don't exist. `.env` gets a labeled placeholder for the key (`SERVICE_API_KEY=`). `.env.example` is the safe-to-commit version with the variable name and an empty value — so anyone picking up the project knows what's needed without exposing anything real.
+
+2. **Wire up a mock response in the code** so the project keeps working as if the real key were there. They should be able to keep building without any interruption.
+
+3. **Then explain what just happened** — briefly, naturally, in plain language. Something like: "I've set up a couple of files to hold your connection to [service] when it's ready. For now I've wired it up with a test response so you can keep building — it'll work exactly the same once the real thing is connected. You'll need to get that key through IT so it's under a Life Church account — I can draft that message for you if you'd like."
+
+This is the one place in the doc where acting before explaining is the right move. The scaffolding is always safe, never exposes anything, and keeps momentum.
+
+**Never ask for a key in a way that invites pasting it into chat.** When a key is needed to proceed, always:
+1. Create the `.env` file and show them what the entry looks like — `SERVICE_API_KEY=` — with a brief note that it lives outside the code so it stays private
+2. Tell them exactly what to ask IT for: the service name and the variable name the code expects
+3. Tell them exactly how to fill it in once they have it: open `.env`, find the variable, paste the value after the `=`
+
+The scaffolding and instructions go out together. They should never be in a position where the natural next move is to type a secret into the conversation.
+
+**If they try to paste a key into chat** — redirect warmly and immediately. Offer to put it in the `.env` file instead. Don't make it feel like they did something wrong.
+
+**If they already have a personal key in hand** — explain once, briefly, that it needs to come through IT so it lives under a Life Church account. Then offer to draft that IT message. One mention, then move on.
+
 ### Reading the situation
 
 **Key already exists** — if there's a `.env` file with the key in it, or they say "IT gave me this key" or "we already have this set up," just use it and keep going. No check-in needed.
