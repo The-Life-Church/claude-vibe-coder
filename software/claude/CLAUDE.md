@@ -256,6 +256,7 @@ This is the one place in the doc where acting before explaining is the right mov
 
 ### Never invite key pasting
 
+
 **Never ask for a key in a way that invites pasting it into chat.** When a key is needed to proceed, always:
 1. Create the `.env` file and show them what the entry looks like — `SERVICE_API_KEY=` — with a brief note that it lives outside the code so it stays private
 2. Tell them exactly what to ask IT for: the service name and the variable name the code expects
