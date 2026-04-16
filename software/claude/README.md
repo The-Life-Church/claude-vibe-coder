@@ -1,13 +1,13 @@
 # Claude Code — Policy Files
 
-This folder contains the managed Claude Code policies deployed to all Life Church Macs via Mosyle.
+This folder contains the managed Claude Code policies deployed to Life Church Macs. Two layers: a behavioral policy file and a managed settings file.
 
 ---
 
 ## Files
 
 ### `CLAUDE.md`
-The behavioral instruction file loaded by Claude Code on every managed Mac. It shapes how Claude behaves across all projects — things like slowing down before making changes, asking questions before building, knowing when to loop in IT, and keeping work local until it's ready to go further.
+The behavioral instruction file loaded by Claude Code on every managed Mac. It shapes how Claude behaves across all projects — slowing down before making changes, asking questions before building, knowing when to loop in IT, and keeping work local until it's ready to go further.
 
 **To view the live file:** [software/claude/CLAUDE.md](./CLAUDE.md)
 
@@ -46,17 +46,59 @@ Users can still run any of these themselves in Terminal — this only prevents C
 
 ---
 
-### `deploy-claude-policy.sh`
-Mosyle script that pulls the latest `CLAUDE.md` from GitHub to `/etc/claude-code/CLAUDE.md` and wires the import block into the user's `~/.claude/CLAUDE.md`. Runs daily as root.
+### Deploy scripts
 
-### `deploy-managed-settings.sh`
-Mosyle script that pulls the latest `managed-settings.json` from GitHub and places it at `/Library/Application Support/ClaudeCode/managed-settings.json`. Runs daily as root.
+- `deploy-claude-policy.sh` — Mosyle script that pulls the latest `CLAUDE.md` from GitHub to `/etc/claude-code/CLAUDE.md` and wires the import block into the user's `~/.claude/CLAUDE.md`. Runs daily as root.
+- `deploy-managed-settings.sh` — Mosyle script that pulls the latest `managed-settings.json` from GitHub and places it at `/Library/Application Support/ClaudeCode/managed-settings.json`. Runs daily as root.
+- `remove-claude-policy.sh` — Removes the managed policy file and cleans up the import block from the user's `~/.claude/CLAUDE.md`. Run manually as root to offboard a device.
 
-### `remove-claude-policy.sh`
-Removes the managed policy file and cleans up the import block from the user's `~/.claude/CLAUDE.md`. Run manually as root to offboard a device.
+---
 
-### `DEPLOYMENT.md`
-Step-by-step guide for setting up the Mosyle scripts and verifying deployment on a test Mac.
+## Deployment
+
+Policies are pulled directly from `The-Life-Church/tlc-tech-policies` on GitHub. Mosyle runs each script on a daily schedule — merge a PR to `main` and devices pick it up automatically on the next run.
+
+### Behavioral Policy (CLAUDE.md)
+
+Mosyle → **Custom Scripts → Add Script**
+- Run as: `root`
+- Schedule: Daily
+- Scope: Default group
+- Script:
+```bash
+#!/bin/zsh
+curl -fsSL "https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/claude/CLAUDE.md" -o /etc/claude-code/CLAUDE.md
+```
+
+**Verify on a test Mac:**
+```bash
+cat /etc/claude-code/CLAUDE.md
+```
+
+### Managed Settings (`managed-settings.json`)
+
+Mosyle → **Custom Scripts → Add Script**
+- Run as: `root`
+- Schedule: Daily
+- Scope: Default group
+- Upload `deploy-managed-settings.sh`
+
+**Verify on a test Mac:**
+```bash
+cat "/Library/Application Support/ClaudeCode/managed-settings.json"
+```
+
+Then restart Claude Code and run `/status`. Expected result: `Setting sources` includes the local managed settings source.
+
+### Admin Console Settings
+
+1. Open [claude.ai](https://claude.ai) → Admin → Settings
+2. Paste the contents of `managed-settings.json`
+3. Save
+
+> Manual step — no Mosyle involvement. Same settings file, different delivery path.
+
+Verify in Claude Code with `/status`. Expected result: `Setting sources` includes `Enterprise managed settings (remote)`.
 
 ---
 
@@ -67,4 +109,4 @@ Step-by-step guide for setting up the Mosyle scripts and verifying deployment on
 3. Merge to `main`
 4. Mosyle picks up the change on the next scheduled run (up to 24 hours)
 
-The `managed-settings.json` also needs to be updated manually in the Claude admin console after merging — see `DEPLOYMENT.md` for details.
+For the admin console settings, update them manually after merging.

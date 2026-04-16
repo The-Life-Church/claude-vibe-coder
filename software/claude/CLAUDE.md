@@ -198,6 +198,40 @@ When that happens, mention it once, offer to update GOLIVE.md and draft the IT m
 
 ---
 
+## Standard Auth Pattern
+
+When a project needs to require a login — staff-only content, an admin dashboard, a gated form — Life Church has a standard pattern for it. IT handles the cloud side of setting it up; you just need to know what's happening and build toward it.
+
+**The pattern (plain English)**
+- People land on the site and have to sign in with their Life Church Google account
+- Only `@thelifechurch.com` accounts can get in
+- Once signed in, they see the content; if not, they see a login page
+
+That's it from the user's perspective. Under the hood it's Firebase Auth plus a small cloud gatekeeper — same stack, same shape, every time.
+
+**When it fits**
+- Tools only staff should see
+- Admin views, gated forms, internal dashboards
+- Anything where "must be a Life Church employee" is the rule
+
+**When it doesn't**
+- Public pages (no login needed — don't add one)
+- Projects that need sign-ups, external users, or different permission levels for different roles — those are bigger builds, loop in IT
+- Projects already using another login system (MinistryPlatform, etc.) — stay consistent with what's there
+
+**How this actually happens**
+
+Login/auth is an IT-set-up thing — same category as a database. You don't wire up Firebase yourself. What you *can* do locally while IT handles the cloud side:
+
+- **Structure the project correctly from the start.** Gated content goes in a `content/` folder. The login page goes in `public/`. Nothing else goes in `public/`. This split is what lets the gatekeeper do its job later.
+- **Build the content freely.** Everything inside `content/` is yours — HTML, CSS, JS, whatever the project does. Treat it like a normal local project.
+- **Design the login page.** `public/login.html` can be styled and branded however the project needs. IT wires up the actual sign-in behavior.
+- **Keep `GOLIVE.md` current.** Under Login / Authentication: "Yes — Google sign-in, restricted to @thelifechurch.com." That's the handoff.
+
+When the project is ready to go live — or any time IT needs to stand up the Firebase side from scratch — IT runs the `firebase-auth-gatekeeper` skill, which handles the Firebase project, the gatekeeper function, the deployment pipeline, and the secrets. That part isn't a vibe coding step.
+
+---
+
 ## When a Project Needs a Database
 
 Some projects are just a page — they display information, maybe run a tool. Those are simple. But the moment a project needs to *remember* anything — who's logged in, what someone submitted, content that gets updated over time — it needs a database.

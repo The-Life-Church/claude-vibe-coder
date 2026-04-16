@@ -12,8 +12,6 @@ Blocks terminal access entirely. When someone opens Terminal, they see a message
 **Deployed by:** `deploy-shell-policy-default.sh`
 **Mosyle scope:** Default device group
 
----
-
 ### Vibe Coders — Claude Code Users
 Allows normal terminal and development work, but blocks specific system-level commands. The terminal opens normally — restrictions only kick in if someone tries to run something that's managed.
 
@@ -32,17 +30,43 @@ Everything else — git, running local servers, scripts, project work — works 
 
 ## Files
 
-### `deploy-shell-policy-default.sh`
-Mosyle script that writes the default (full block) policy to `/etc/tlc-shell-policy.zsh` and wires it into `/etc/zshrc`. Runs daily as root.
+- `deploy-shell-policy-default.sh` — Mosyle script that writes the default (full block) policy to `/etc/tlc-shell-policy.zsh` and wires it into `/etc/zshrc`. Runs daily as root.
+- `deploy-shell-policy-vibe-coders.sh` — Mosyle script that writes the vibe coders (selective block) policy to `/etc/tlc-shell-policy.zsh` and wires it into `/etc/zshrc`. Runs daily as root.
+- `remove-shell-policy.sh` — Removes the policy file and cleans up the source line from `/etc/zshrc`. Run manually as root to offboard a device or switch policy tiers.
 
-### `deploy-shell-policy-vibe-coders.sh`
-Mosyle script that writes the vibe coders (selective block) policy to `/etc/tlc-shell-policy.zsh` and wires it into `/etc/zshrc`. Runs daily as root.
+---
 
-### `remove-shell-policy.sh`
-Removes the policy file and cleans up the source line from `/etc/zshrc`. Run manually as root to offboard a device or switch policy tiers.
+## Deployment
 
-### `DEPLOYMENT.md`
-Step-by-step guide for setting up the Mosyle scripts and verifying deployment on a test Mac.
+Policies are embedded directly in the deploy scripts. Mosyle runs each script on a daily schedule — merge a PR to `main` and devices pick it up automatically on the next run.
+
+Mosyle → **Custom Scripts → Add Script** — one per group.
+
+**Vibe Coders/Claude Users group**
+- Run as: `root`
+- Schedule: Daily
+- Scope: Vibe Coders/Claude Users group
+- Script:
+```bash
+#!/bin/bash
+curl -fsSL "https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/shell/deploy-shell-policy-vibe-coders.sh" | bash
+```
+
+**Default group**
+- Run as: `root`
+- Schedule: Daily
+- Scope: Default group
+- Script:
+```bash
+#!/bin/bash
+curl -fsSL "https://raw.githubusercontent.com/The-Life-Church/tlc-tech-policies/main/software/shell/deploy-shell-policy-default.sh" | bash
+```
+
+**Verify on a test Mac:**
+```bash
+cat /etc/tlc-shell-policy.zsh
+cat /etc/zshrc
+```
 
 ---
 
