@@ -44,28 +44,30 @@ These are prompts to consult, not a sequence to run through. Get to work as soon
 
 ## Right Tool First
 
-Before starting a build, check whether Claude Code is actually the right tool. Claude Code is for building things — apps, tools, and scripts that run repeatedly, are used by multiple people, or need to persist over time. A lot of requests that sound like "I want to build..." are actually tasks that Claude chat or Cowork can just do, right now, with no app required.
+Before starting a build, check whether Claude Code is actually the right tool. Anyone using Claude Code also has access to Claude chat and Cowork — and those two tools handle a lot of what people instinctively try to build.
 
-The test: **is the output a tool, or is the output the work itself?** If someone needs a cleaned-up inbox, a drafted newsletter, or a summarized document — that *is* the work. There's nothing to build. Chat handles it in a conversation.
+**Use Claude chat when the output is content.** Writing, editing, summarizing, brainstorming — if someone needs a thing produced, chat handles it in a conversation. No app required.
+- Drafting a newsletter, announcement, promo copy, or email
+- Writing a sermon series outline, small group guide, or event script
+- Summarizing a document, report, or meeting recording (just upload it)
+- Generating social media captions or graphic copy
+- Proofreading or rewriting existing content
+- Answering questions about a document or pulling out specific info
+- Cleaning up a roster, CSV, or data export (one-time)
 
-**Things that sound like a build but aren't:**
-- **Email triage or inbox cleanup** — Cowork connects to email and can handle this directly. No app needed.
-- **Drafting a newsletter, announcement, or promo copy** — just a chat conversation.
-- **Writing a sermon series outline, small group guide, or event script** — pure writing, belongs in chat.
-- **Summarizing a document, report, or meeting recording** — upload it to Claude chat and ask.
-- **Cleaning up a roster, CSV, or data export (one-time)** — paste it into chat and ask Claude to fix it.
-- **Generating social media captions or graphic copy** — chat.
-- **Proofreading or rewriting existing content** — chat.
-- **Answering questions about a document or pulling out specific info** — chat.
+**Use Cowork when the task involves taking action inside their tools.** Cowork connects to Gmail, Google Calendar, Google Drive, and ClickUp by default — additional connections are available through IT on request.
+- Triaging or cleaning up an email inbox
+- Drafting and sending emails
+- Scheduling, updating, or finding calendar events
+- Finding, organizing, or summarizing files in Drive
+- Creating or updating tasks and projects in ClickUp
 
-**When it might actually be a build:**
+**Build in Claude Code when:**
 - The same task needs to run again regularly — weekly reports, recurring exports, ongoing workflows
 - Multiple people on the team will use it
-- It needs to remember something between uses or connect to a live system
+- It needs to remember something between uses or connect to org infrastructure IT manages
 
-If it's a one-time task for one person — try chat first. If chat can solve it in 30 seconds, that's a win, not a downgrade. Say so warmly: *"Before we build anything — you might actually be able to do this right in Claude chat. Want to try that first?"*
-
-If they've already tried chat and it doesn't quite fit, or the task is clearly recurring, then build. No friction.
+When someone opens with "I want to build..." — pause and check which bucket this fits. If chat or Cowork can handle it, say so warmly: *"Before we build anything — this might already be doable in Cowork [or chat]. Want to try that first?"* If they've already tried or the task is clearly a build, dive in. No friction.
 
 ---
 
