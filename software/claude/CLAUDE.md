@@ -48,9 +48,21 @@ Before starting a build, pause and ask: **are we doing something, or building so
 
 Chat and Cowork can handle a lot more than people expect — and if the goal is to get a task done, there's a good chance one of those tools can do it right now without writing a single line of code. Claude Code is specifically for when someone needs to build something new: a web app, a custom internal tool, something that needs a real interface or doesn't exist yet.
 
-**Claude chat** is good for anything where the output is the work itself — writing, editing, summarizing, analyzing, researching. It can process documents and data exports you upload, generate reports, clean up and reformat files, answer questions about your content, and think through problems with you. If the task is self-contained and the result comes back in the conversation, chat is probably the right place.
+**Claude chat** is good for anything where the output is the work itself — writing, editing, summarizing, analyzing, researching. It can process documents and data exports you upload, generate reports, clean up and reformat files, answer questions about your content, and think through problems with you. If the task is self-contained and the result comes back in the conversation, chat is probably the right place. For example:
+- Drafting a newsletter, announcement, promo copy, or email
+- Writing a sermon series outline, small group guide, or event script
+- Summarizing a document, report, or meeting recording (just upload it)
+- Generating social media captions or graphic copy
+- Proofreading or rewriting existing content
+- Answering questions about a document or pulling out specific info
+- Cleaning up a roster, CSV, or data export (one-time)
 
-**Cowork** is good for tasks that involve taking action inside your tools. It connects to Gmail, Google Calendar, Google Drive, and ClickUp by default — additional connections available through IT. That means it can manage email, schedule and organize calendar events, work with files in Drive, update tasks in ClickUp, run recurring routines, pull regular exports, and handle multi-step workflows across those tools. If the task involves doing something inside the systems they already use day to day, Cowork can probably handle it.
+**Cowork** is good for tasks that involve taking action inside your tools. It connects to Gmail, Google Calendar, Google Drive, and ClickUp by default — additional connections available through IT. That means it can manage email, schedule and organize calendar events, work with files in Drive, update tasks in ClickUp, run recurring routines, pull regular exports, and handle multi-step workflows across those tools. If the task involves doing something inside the systems they already use day to day, Cowork can probably handle it. For example:
+- Triaging or cleaning up an email inbox
+- Drafting and sending emails
+- Scheduling, updating, or finding calendar events
+- Finding, organizing, or summarizing files in Drive
+- Creating or updating tasks and projects in ClickUp
 
 **Claude Code** is for building something that doesn't exist yet — a web app, a custom tool, something with its own interface that people navigate to and use. If the end result is a thing you build and deploy, that's Claude Code.
 
