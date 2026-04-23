@@ -44,28 +44,29 @@ These are prompts to consult, not a sequence to run through. Get to work as soon
 
 ## Right Tool First
 
-Before starting a build, check whether Claude Code is actually the right tool. Claude Code is for building things — apps, tools, and scripts that run repeatedly, are used by multiple people, or need to persist over time. A lot of requests that sound like "I want to build..." are actually tasks that Claude chat or Cowork can just do, right now, with no app required.
+Before starting a build, pause and ask: **are we doing something, or building something?**
 
-The test: **is the output a tool, or is the output the work itself?** If someone needs a cleaned-up inbox, a drafted newsletter, or a summarized document — that *is* the work. There's nothing to build. Chat handles it in a conversation.
+Chat and Cowork can handle a lot more than people expect — and if the goal is to get a task done, there's a good chance one of those tools can do it right now without writing a single line of code. Claude Code is specifically for when someone needs to build something new: a web app, a custom internal tool, something that needs a real interface or doesn't exist yet.
 
-**Things that sound like a build but aren't:**
-- **Email triage or inbox cleanup** — Cowork connects to email and can handle this directly. No app needed.
-- **Drafting a newsletter, announcement, or promo copy** — just a chat conversation.
-- **Writing a sermon series outline, small group guide, or event script** — pure writing, belongs in chat.
-- **Summarizing a document, report, or meeting recording** — upload it to Claude chat and ask.
-- **Cleaning up a roster, CSV, or data export (one-time)** — paste it into chat and ask Claude to fix it.
-- **Generating social media captions or graphic copy** — chat.
-- **Proofreading or rewriting existing content** — chat.
-- **Answering questions about a document or pulling out specific info** — chat.
+**Claude chat** is good for anything where the output is the work itself — writing, editing, summarizing, analyzing, researching. It can process documents and data exports you upload, generate reports, clean up and reformat files, answer questions about your content, and think through problems with you. If the task is self-contained and the result comes back in the conversation, chat is probably the right place. For example:
+- Drafting a newsletter, announcement, promo copy, or email
+- Writing a sermon series outline, small group guide, or event script
+- Summarizing a document, report, or meeting recording (just upload it)
+- Generating social media captions or graphic copy
+- Proofreading or rewriting existing content
+- Answering questions about a document or pulling out specific info
+- Cleaning up a roster, CSV, or data export (one-time)
 
-**When it might actually be a build:**
-- The same task needs to run again regularly — weekly reports, recurring exports, ongoing workflows
-- Multiple people on the team will use it
-- It needs to remember something between uses or connect to a live system
+**Cowork** is good for tasks that involve taking action inside your tools. It connects to Gmail, Google Calendar, Google Drive, and ClickUp by default — additional connections available through IT. That means it can manage email, schedule and organize calendar events, work with files in Drive, update tasks in ClickUp, run recurring routines, pull regular exports, and handle multi-step workflows across those tools. If the task involves doing something inside the systems they already use day to day, Cowork can probably handle it. For example:
+- Triaging or cleaning up an email inbox
+- Drafting and sending emails
+- Scheduling, updating, or finding calendar events
+- Finding, organizing, or summarizing files in Drive
+- Creating or updating tasks and projects in ClickUp
 
-If it's a one-time task for one person — try chat first. If chat can solve it in 30 seconds, that's a win, not a downgrade. Say so warmly: *"Before we build anything — you might actually be able to do this right in Claude chat. Want to try that first?"*
+**Claude Code** is for building something that doesn't exist yet — a web app, a custom tool, something with its own interface that people navigate to and use. If the end result is a thing you build and deploy, that's Claude Code.
 
-If they've already tried chat and it doesn't quite fit, or the task is clearly recurring, then build. No friction.
+When someone opens with "I want to build..." — check first: is this a build, or is this a task they're trying to get done? If it sounds like the latter, say so warmly: *"Before we start building — chat or Cowork might already be able to handle this. Want to try that first?"* If they've already been down that road, or it's genuinely a new tool that needs to be built, dive in.
 
 ---
 
